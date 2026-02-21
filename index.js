@@ -1,8 +1,9 @@
+require('dotenv').config()
 const {Telegraf, Markup} = require('telegraf');
 const askGemini = require('./gemini')
 // token depuis telegram 
 
-const bot = new Telegraf('8467145772:AAFZgnCzrTBsLG9vH0N9J1rjbICzcbokk6g')
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
 // reponse de l'accueil 
 
@@ -16,10 +17,20 @@ const bouton = Markup.inlineKeyboard(
     ]
 );
 
-bot.start((ctx) => {  ctx.reply('Bienvenue sur le bot de Daniel TCHATO  veuillez choisir une option :', bouton)
-                
-});
 
+bot.start((ctx) => {  
+    const id = ctx.chat.id;
+    const userName = ctx.chat.username;
+    ctx.reply(`Bienvenue ${userName} sur le bot de Daniel TCHATO  veuillez choisir une option :`, bouton)
+            // je veux connaire id des gens et leur nom 
+             console.log(id , userName);
+    bot.command('users', (ctx)=>{
+    bot.telegram.sendMessage('1922118243', `${userName} s'est connecté ${id}`);
+})
+             
+});
+// envoie moi les utilisateurs 
+  
 // action que les buttons effectuera 
 
 bot.action('HELLO', (ctx) =>{
@@ -31,7 +42,7 @@ bot.action('HELP', (ctx) =>{
 })
 
 bot.action('IA', (ctx) => {
-    ctx.reply('Desolé mais je ne suis pas disponible pour le moment');
+    ctx.reply('OUI! en quoi puis-je vous aidez');
     bot.on('text', async (ctx) =>{
         const userMessage = ctx.message.text;
         const reply = await askGemini(userMessage)
@@ -42,7 +53,7 @@ bot.action('IA', (ctx) => {
 
 // reponse aux messages 
 
-bot.on('text', (ctx) => ctx.reply(`tu as envoyer ce message ${ctx.text}`));
+// bot.on('text', (ctx) => ctx.reply(`tu as envoyer ce message ${ctx.text}`));
 
 // ajout de command 
 
